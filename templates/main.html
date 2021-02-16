@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>GPT-2 Superheroes</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<script type="text/javascript">
+    let time_obj = undefined;
+    let flag = undefined;
+    let chars = undefined;
+
+    window.onload = () => {
+        time_obj = document.getElementById("timer");
+        flag = false;       // 더블 클릭 체크
+    }
+
+
+    function double_submit_check() {
+        if (flag) {
+            console.log("double");
+            return true;
+        }
+        else {
+            flag = true;
+
+            return false;
+        }
+    }
+
+
+    function send_req() {
+        if (double_submit_check()){
+            return ;
+        }
+
+        let text = document.getElementById("text").value;
+
+        if (text == '') {
+            document.getElementById('warning').innerText = 'Please fill text!';
+            flag = false;
+            return ;
+        }
+
+        const formData = new FormData();
+        const url = "/fairytale";
+        let start = 0;
+
+        formData.append('text', text);
+        formData.append('length', 300);
+
+        // timer
+        timer = setInterval(() => {
+            start += 1;
+            time_obj.innerText = `${start / 10} 's`;
+        }, 100);
+
+
+        fetch (url, { method: 'POST', body: formData, })
+        .then(response => {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                clearInterval(timer);
+                flag = false;
+            }
+        }).catch(err => {
+            clearInterval(timer);
+            flag = false;
+            document.getElementById('warning').innerText = err;
+        }).then(data => {
+            const result = document.getElementById('result');
+            result.innerHTML = '&nbsp;&nbsp;' + data[0];
+
+            clearInterval(timer);
+            time_obj.innerText = 'Done!';
+            flag = false;
+        }).catch(err => {
+            clearInterval(timer);
+            flag = false;
+            document.getElementById('warning').innerText = err;
+        });
+
+    }
+
+</script>
+<body>
+    <div class="styles">
+        <style>
+                #button{
+                    border-top-left-radius: 5pt;
+                    border-top-right-radius: 5pt;
+                    border-bottom-left-radius: 5pt;
+                    border-bottom-right-radius: 5pt;
+                }
+
+                #length{
+                    width: 70px;
+                    height: 30px;
+                    border-top-left-radius: 5pt;
+                    border-top-right-radius: 5pt;
+                    border-bottom-left-radius: 5pt;
+                    border-bottom-right-radius: 5pt;
+                }
+
+                table {
+                  border-spacing: 10px;
+                  border-collapse: separate;
+                }
+
+        </style>
+    </div>
+    <div class="container">
+        <div class="jumbotron mt-3">
+            <div class="intro">
+                <br>
+                <!-- Project title -->
+                <h1>GPT-2 FairyTales</h1><br>
+                <a>Generate FairyTales using GPT-2 model.</a><br><br>
+                <a>Git hub repository : </a> <a href="" target="_blank">GPT-2 FairyTales</a><br>
+                <a>Open API : </a> <a href="" target="_blank">On Ainize</a><br>
+                <a>Fine tuning data : </a><a href="" target="_blank">Kaggle</a><br><br>
+            </div>
+
+            <hr width="90%">
+
+            <div class="Notice">
+                <h3>Notice</h3>
+                <ul>
+                    <li>In this demo, the text length is fixed at 300.</li>
+                    <li>The last line can be cut off in the middle.</li>
+                </ul>
+            </div>
+
+            <br><hr width="90%">
+
+            <div class="sample">
+                <h3><label>Example</label></h3>
+                <h5><label>Input</label></h5>
+                <label>&nbsp;&nbsp;Text: </label><br><br>
+                <h5><label>FairyTales</label></h5>
+                <label>&nbsp;&nbsp;</label><br><br>
+            </div>
+
+            <br><hr width="90%">
+
+            <div class="generate">
+                <h3>Try it!</h3><br>
+                <label>Base text: </label>
+                <input type="text" id="text" style="width:40%">
+                <button class="btn btn-primary btn=lg" type="submit" id="button1" onclick="send_req();">Summit</button>
+                <label>Timer:&nbsp;</label><label id="timer">0.0</label><br>
+                <b><label id="warning" style="color:red;"></label></b>
+            </div>
+
+            <br><hr width="90%">
+
+            <div class="result">
+                <h3><label>Result</label></h3>
+                <!-- Story generate result table -->
+                <label id="result"></label>
+            </div>
+
+            <br><hr width="50%">
+        </div>
+    </div>
+</body>
+</html>
