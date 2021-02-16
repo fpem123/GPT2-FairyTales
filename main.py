@@ -68,6 +68,9 @@ def mk_fairytale(text, length):
         input_ids = input_ids.to(device)
 
         min_length = len(input_ids.tolist()[0])
+
+        length = length if length > 0 else 1
+
         length += min_length
 
         # story model generating
