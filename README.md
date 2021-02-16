@@ -37,8 +37,7 @@ Fine tuning data: [Kaggle](https://www.kaggle.com/cuddlefish/fairy-tales)
 
 ### Input example
 
-
-
+    curl -X POST "https://master-gpt2-fairy-tales-fpem123.endpoint.ainize.ai/fairytale" -H "accept: application/json" -H "Content-Type: multipart/form-data" -F "text=One day," -F "length=150"
 
 ### Output example
 
