@@ -14,12 +14,12 @@ info:
       * And then, Fill number in length. Text is created as long as "length". I recommend between 100 and 300.
       * If length is so big, generate time will be long.
     ---
-    And you can use this in [demo page]().
+    And you can use this in [demo page](https://master-gpt2-fairy-tales-fpem123.endpoint.ainize.ai/).
 
     Fine tuning data reference >> [Fairy Tales](https://www.kaggle.com/cuddlefish/fairy-tales)
 
 servers:
-  - url:
+  - url: https://master-gpt2-fairy-tales-fpem123.endpoint.ainize.ai/
 
 paths:
   /fairytale:
@@ -39,7 +39,7 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                text:
                   type: string
                   description: "Your Fairytale base."
                 length:
