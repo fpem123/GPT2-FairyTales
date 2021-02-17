@@ -96,7 +96,7 @@ def mk_fairytale(text, length):
 ##
 # Get post request page.
 @app.route('/fairytale', methods=['POST'])
-def generate(types):
+def generate():
 
     # GPU app can process only one request in one time.
     if requests_queue.qsize() > BATCH_SIZE:
