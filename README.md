@@ -38,11 +38,14 @@ Fine tuning data: [Kaggle](https://www.kaggle.com/cuddlefish/fairy-tales)
 ### Input example
 
 
-    curl -X POST "https://master-gpt2-fairy-tales-fpem123.endpoint.ainize.ai/fairytale" -H "accept: application/json" -H "Content-Type: multipart/form-data" -F "text=One day," -F "length=150"
+    curl -X POST "https://master-gpt2-fairy-tales-fpem123.endpoint.ainize.ai/fairytale" -H "accept: application/json" -H "Content-Type: multipart/form-data" -F "text=One day," -F "length=50"
 
 ### Output example
 
 
+    {
+      "0": "One day, when the King and his seven sons-in-law were in his court-house, and it was full of people, the young prince said to him, \"There are six thieves here in your court-house.\" \"Six thieves!\" said the"
+    }
 
 
 ## * With swagger *
