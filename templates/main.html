@@ -47,12 +47,12 @@
             return ;
         }
 
-        const formData = new FormData();
-        const url = "/fairytale";
+        const data = {};
+        const url = "https://feature-add-torch-serve-gpt-2-server-gkswjdzz.endpoint.ainize.ai/infer/GPT2-large_Fairytale";
         let start = 0;
 
-        formData.append('text', text);
-        formData.append('length', 300);
+        data['text'] = text;
+        data['length'] = 300;
 
         // timer
         timer = setInterval(() => {
@@ -61,7 +61,9 @@
         }, 100);
 
 
-        fetch (url, { method: 'POST', body: formData, })
+        fetch (url, { method: 'POST', headers: {
+            'Content-Type': 'application/json'
+        }, body: JSON.stringify(data)})
         .then(response => {
             if (response.status === 200) {
                 return response.json();
