@@ -19,10 +19,10 @@ info:
     Fine tuning data reference >> [Fairy Tales](https://www.kaggle.com/cuddlefish/fairy-tales)
 
 servers:
-  - url: https://master-gpt2-fairy-tales-fpem123.endpoint.ainize.ai/
+  - url: https://feature-add-torch-serve-gpt-2-server-gkswjdzz.endpoint.ainize.ai
 
 paths:
-  /fairytale:
+  /infer/GPT2-large_Fairytale:
     post:
       requestBody:
         required: true
@@ -36,23 +36,33 @@ paths:
 
           curl example
 
-              curl -X POST "https://master-gpt2-fairy-tales-fpem123.endpoint.ainize.ai/fairytale" -H "accept: application/json" -H "Content-Type: multipart/form-data" -F "text=One day," -F "length=50"
-
+              curl -X 'POST' \
+              'https://feature-add-torch-serve-gpt-2-server-gkswjdzz.endpoint.ainize.ai/infer/GPT2-large_Fairytale' \
+              -H 'accept: */*' \
+              -H 'Content-Type: application/json' \
+              -d '{
+              "text": "One day,",
+              "num_samples": 1,
+              "length": 300
+              }'
         content:
-          multipart/form-data:
+          'application/json':
             schema:
               type: object
               properties:
                 text:
                   type: string
                   description: "Your Fairytale base."
+                num_samples:
+                  type: integer
                 length:
-                  type: string
+                  type: integer
                   description: "The size of text."
-              required:
-                - name
-                - text
-                - length
+              example: {
+                "text": "One day,",
+                "num_samples": 1,
+                "length": 300
+              }
       responses: # Set response
         '200':
           description: "Successful Response"
