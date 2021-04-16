@@ -2,12 +2,13 @@
     Name: main.py
     Writer: Hoseop Lee, Ainizer
     Rule: Flask app server
-    update: 21.02.09
+    update: 21.02.14
 '''
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from flask import Flask, request, jsonify, render_template
 import torch
+import os
 from queue import Queue, Empty
 from threading import Thread
 import time
@@ -16,9 +17,11 @@ app = Flask(__name__)
 
 print("model loading...")
 
+print(os.system("ls"))
+
 # Model & Tokenizer loading
-tokenizer = AutoTokenizer.from_pretrained('./GPT2-large_Friends')
-model = AutoModelForCausalLM.from_pretrained('./GPT2-large_Friends')
+tokenizer = AutoTokenizer.from_pretrained('./GPT2-large_Fairytale')
+model = AutoModelForCausalLM.from_pretrained('./GPT2-large_Fairytale')
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
@@ -28,6 +31,7 @@ BATCH_SIZE = 1              # max request size.
 CHECK_INTERVAL = 0.1
 
 print("complete model loading")
+
 
 ##
 # Request handler.
@@ -44,7 +48,8 @@ def handle_requests_by_batch():
 
             for requests in request_batch:
                 try:
-                    requests["output"] = mk_friends_script(requests['input'][0], requests['input'][1], requests['input'][2])
+                    requests["output"] = mk_fairytale(requests['input'][0], requests['input'][1])
+
                 except Exception as e:
                     requests["output"] = e
 
@@ -54,45 +59,32 @@ handler = Thread(target=handle_requests_by_batch).start()
 
 ##
 # GPT-2 generator.
-# Make Friends script.
-def mk_friends_script(name, text, length):
+# Make Fairytale
+def mk_fairytale(text, length):
     try:
-        text = name + ': ' + text.strip()
         input_ids = tokenizer.encode(text, return_tensors='pt')
 
         # input_ids also need to apply gpu device!
         input_ids = input_ids.to(device)
 
         min_length = len(input_ids.tolist()[0])
+
+        length = length if length > 0 else 1
+
         length += min_length
 
-        length = length if length > 50 else 50
-
-        # model generating
-        sample_outputs = model.generate(input_ids, pad_token_id=50256,
-                                        do_sample=True,
-                                        max_length=length,
-                                        min_length=min_length,
-                                        top_k=40,
-                                        num_return_sequences=1)
+        # story model generating
+        outputs = model.generate(input_ids, pad_token_id=50256,
+                                 do_sample=True,
+                                 max_length=length,
+                                 min_length=min_length,
+                                 top_k=40,
+                                 num_return_sequences=1)
 
         result = dict()
 
-        for idx, sample_output in enumerate(sample_outputs):
-            friends_story = tokenizer.decode(sample_output, skip_special_tokens=True).split('\n')
-
-            for i in range(len(friends_story)):
-                if friends_story[i]:
-                    if friends_story[i][0] in ['(', '[']:
-                        friends_story[i] = ['Narrator', friends_story[i]]
-                    elif ':' in friends_story[i]:
-                        friends_story[i] = friends_story[i].split(':')
-                    else:
-                        friends_story[i] = [friends_story[i - 1][0], friends_story[i]]
-                else:
-                    continue
-
-            result[idx] = friends_story
+        for idx, sample_output in enumerate(outputs):
+            result[0] = tokenizer.decode(sample_output.tolist(), skip_special_tokens=True)
 
         return result
 
@@ -103,8 +95,9 @@ def mk_friends_script(name, text, length):
 
 ##
 # Get post request page.
-@app.route('/friends', methods=['POST'])
+@app.route('/fairytale', methods=['POST'])
 def generate():
+
     # GPU app can process only one request in one time.
     if requests_queue.qsize() > BATCH_SIZE:
         return jsonify({'Error': 'Too Many Requests'}), 429
@@ -112,11 +105,9 @@ def generate():
     try:
         args = []
 
-        name = request.form['name']
         text = request.form['text']
         length = int(request.form['length'])
 
-        args.append(name)
         args.append(text)
         args.append(length)
 
@@ -159,4 +150,4 @@ def main():
 
 
 if __name__ == '__main__':
-    serve(app, port=80, host='0.0.0.0')
+    app.run(host='0.0.0.0', port=80)

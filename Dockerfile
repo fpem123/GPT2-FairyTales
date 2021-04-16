@@ -1,4 +1,4 @@
-FROM leehoseop/gpt2_friends:1.1
+FROM leehoseop/gpt2_fairytale:1.0
 
 WORKDIR /app
 COPY . .
