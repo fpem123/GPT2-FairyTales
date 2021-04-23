@@ -4,6 +4,8 @@
 
 This project generate Fairytale using GPT-2 model.
 
+You can download the model here: [Hugging face](https://huggingface.co/HScomcom/gpt2-fairytales)
+
 Fine tuning data: [Kaggle](https://www.kaggle.com/cuddlefish/fairy-tales)
 
 ### Model information
